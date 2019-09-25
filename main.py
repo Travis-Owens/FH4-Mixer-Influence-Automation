@@ -7,6 +7,7 @@ import requests
 import json
 import os.path
 import pickle
+from time import sleep
 
 class influence_farm_bot(object):
     def __init__(self):
@@ -41,6 +42,8 @@ class influence_farm_bot(object):
             else:
                 self.get_fh4_stream()
                 self.update_mixer_channel()
+
+            sleep(60)
 
     def init_setup(self):
         # This function will wait for the user to login and then save the session cookies to a local file
