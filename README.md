@@ -7,5 +7,5 @@ This script will avoid influence farm channels (these channels are nerfed and do
  This script will save the session cookies to a file and load them on startup. This prevents the user from having to login every time they start the script.
 
 # Requirements
-Please install the packages listed in requirements.txt
+Please install the packages listed in requirements.txt </br>
 Additionally, you'll need to have the ChromeDriver (https://chromedriver.chromium.org/downloads) accessible via PATH (system variable).
