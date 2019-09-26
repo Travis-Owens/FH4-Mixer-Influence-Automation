@@ -11,7 +11,7 @@ Please install the packages listed in requirements.txt </br>
 Additionally, you'll need to have the ChromeDriver (https://chromedriver.chromium.org/downloads) accessible via PATH (system variable).
 
 
-# Notes Regarding Linux
+# Notes Regarding Linux (Debian)
 1. sudo apt-get install chromium-browser
 2. Download v76 of the webdriver (https://chromedriver.storage.googleapis.com/index.html?path=76.0.3809.126/)
 3. Add the directory containing the webdriver to the system $PATH variable
