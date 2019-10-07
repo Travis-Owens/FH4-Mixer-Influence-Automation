@@ -15,7 +15,9 @@ class influence_farm_bot(object):
         self.blacklist = ['influence', 'farm', '24/7', 'hangout']
 
         self.chrome_options = webdriver.ChromeOptions()
-        self.chrome_options.add_argument("--mute-audio")
+        #self.chrome_options.add_argument("--mute-audio")
+        self.chrome_options.add_argument("--headless")
+
 
 
     def run(self):
@@ -34,8 +36,17 @@ class influence_farm_bot(object):
 
         self.update_mixer_channel()    # Changes to the current channel
 
+        # Main Loop
         while True:
-            channel_online_status = self.check_stream_status()
+
+            # This will automatically tune to the offical forza stream
+            offical_forza_status  = self.check_stream_status("Forza")
+            if(offical_forza_status):
+                if(self.current_channel['token'] != "Forza"):
+                    self.current_chanel['token'] = "Forza"
+                    self.update_mixer_channel()
+
+            channel_online_status = self.check_stream_status(self.current_channel['token'])
 
             if(channel_online_status == True):
                 pass
@@ -91,9 +102,9 @@ class influence_farm_bot(object):
         ## TODO: If the script reaches this point, it has not found any channels, need a solution to mitgate this
         return
 
-    def check_stream_status(self):
+    def check_stream_status(self, token):
 
-        api_request = 'https://mixer.com/api/v1/channels/' + self.current_channel['token']
+        api_request = 'https://mixer.com/api/v1/channels/' + token
 
         r = requests.get(api_request)
         data = json.loads(r.content.decode('utf-8'))
