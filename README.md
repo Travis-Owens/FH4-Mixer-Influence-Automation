@@ -29,6 +29,6 @@ Additionally, you'll need to have the ChromeDriver (https://chromedriver.chromiu
 5. Download v76 of the [webdriver](https://chromedriver.storage.googleapis.com/index.html?path=76.0.3809.126/)
 6. `unzip chromedriver_linux64.zip`
 7. `sudo pwd` and copy the output
-8. Add the directory containing the webdriver to the system $PATH variable: `export PATH=$PATH:[step 6 ouput]`
+8. Add the directory containing the webdriver to the system $PATH variable: `export PATH=$PATH:[step 7 ouput]`
 9. `python3 main.py -h`
 
