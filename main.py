@@ -5,9 +5,10 @@
 from selenium import webdriver
 import requests
 import json
+import sys
 import os.path
 import pickle
-from time import sleep
+import time
 
 class influence_farm_bot(object):
     def __init__(self):
@@ -17,10 +18,16 @@ class influence_farm_bot(object):
         self.chrome_options = webdriver.ChromeOptions()
         self.chrome_options.add_argument("--mute-audio")
 
+        if(len(sys.argv) >= 2 and sys.argv[1].lower() == "-h"):
+            print("using headless mode")
+            self.chrome_options.add_argument("--headless")
+            self.chrome_options.add_argument("--no-sandbox")
+
+
 
     def run(self):
 
-        self.browser = webdriver.Chrome(chrome_options=self.chrome_options)       # Opens the browser window
+        self.browser = webdriver.Chrome(options=self.chrome_options)       # Opens the browser window
 
         self.browser.get('https://mixer.com/')  # Load mixer.com
 
@@ -51,7 +58,7 @@ class influence_farm_bot(object):
                 self.get_fh4_stream()
                 self.update_mixer_channel()
 
-            sleep(60)
+            time.sleep(60)
 
     def init_setup(self):
         # This function will wait for the user to login and then save the session cookies to a local file
@@ -74,6 +81,7 @@ class influence_farm_bot(object):
     def update_mixer_channel(self):
         channel_url  = 'https://mixer.com/' + self.current_channel['token']
         self.browser.get(channel_url)
+        print("{} | Now watching: {}".format(time.strftime('%H:%M:%S'), self.current_channel['token']))
         return
 
     def get_fh4_stream(self):
