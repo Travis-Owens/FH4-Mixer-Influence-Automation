@@ -15,14 +15,31 @@ class influence_farm_bot(object):
         self.current_channel = {'token': 'null', 'userId': 'null'}
         self.blacklist = ['influence', 'farm', '24/7', 'hangout']
 
-        self.chrome_options = webdriver.ChromeOptions()
-        self.chrome_options.add_argument("--mute-audio")
+        self.arguments = []
+        for i in range(1, len(sys.argv)):
+            self.arguments.append(sys.argv[i])
 
-        if(len(sys.argv) >= 2 and sys.argv[1].lower() == "-h"):
-            print("using headless mode")
+        self.chrome_options = webdriver.ChromeOptions()
+
+        #mute audio 
+        #-nm stands for no mute because mute is default
+        if("-nm" not in self.arguments): 
+            self.chrome_options.add_argument("--mute-audio")
+
+        #headless mode
+        if("-h" in self.arguments):
             self.chrome_options.add_argument("--headless")
             self.chrome_options.add_argument("--no-sandbox")
 
+        #print mode
+        if("-p" in self.arguments):
+            print("Current arguments: ")
+            for arg in self.chrome_options.arguments:
+                print(" " + arg)
+
+            print("Current keyword blacklist: ")
+            for word in self.blacklist:
+                print(" " + word)
 
 
     def run(self):
@@ -33,8 +50,10 @@ class influence_farm_bot(object):
 
         # Checks if user has setup the cookies; load them, eles; create cookie file
         if(os.path.exists('cookies.pkl')):
+            print("cookies.pkl found!")
             self.load_cookies()
         else:
+            print("cookies.pkl not found! Please follow instructions in the readme!")
             self.init_setup()
 
         self.get_fh4_stream()          # Sets current_channel values
@@ -95,7 +114,7 @@ class influence_farm_bot(object):
 
         for channel in data:
             try:
-                if not(bool([i for i in self.blacklist if(i in channel['name'].lower())])):
+                if not(bool([i for i in self.blacklist if(i in channel['name'].lower())])) and self.check_stream_status(channel['token']) == True:
                     self.current_channel['token']   = channel['token']
                     self.current_channel['userId']  = channel['userId']
                     return
@@ -105,18 +124,22 @@ class influence_farm_bot(object):
                 print(e)
 
         ## TODO: If the script reaches this point, it has not found any channels, need a solution to mitgate this
+        print("No online or valid channels!")
         return
 
     def check_stream_status(self, token):
+        try:
+            api_request = 'https://mixer.com/api/v1/channels/' + token
 
-        api_request = 'https://mixer.com/api/v1/channels/' + token
+            r = requests.get(api_request)
+            data = json.loads(r.content.decode('utf-8'))
 
-        r = requests.get(api_request)
-        data = json.loads(r.content.decode('utf-8'))
-
-        if(data['online'] == True):
-            return True
-        else:
-            return False
+            if(data['online'] == True):
+                return True
+            else:
+                return False
+        except Exception as e:
+            print(e)
+            return False 
 
 influence_farm_bot().run()
