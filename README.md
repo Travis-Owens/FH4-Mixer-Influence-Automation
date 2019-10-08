@@ -19,7 +19,7 @@ Additionally, you'll need to have the ChromeDriver (https://chromedriver.chromiu
 
 
 # Arguments
-`-nm` - Mute-Audio
+`-nm` - No Mute (Enables Audio)
 `-h`  - Headless (CLI Usage)
 `-p`  - Print Mode
 
