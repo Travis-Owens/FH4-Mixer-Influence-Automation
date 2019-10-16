@@ -1,4 +1,5 @@
 #Author: @Travis-Owens
+#Co-Author: @Mathisco-01
 #Date:   2019-9-25
 #Description: Microsoft nerfed influence farms and this script will avoid those channel.
 
@@ -9,9 +10,16 @@ import sys
 import os.path
 import pickle
 import time
+import logging
+
 
 class influence_farm_bot(object):
     def __init__(self):
+        logging.basicConfig(filename='FH4-Mixer-Influence-Automation.log', format='%(asctime)s - %(message)s', level=logging.INFO)
+        self.logger = logging.getLogger()
+
+
+        self.logger.info('Startup')
         self.current_channel = {'token': 'null', 'userId': 'null'}
         self.blacklist = ['influence', 'farm', '24/7', 'hangout']
 
@@ -41,6 +49,8 @@ class influence_farm_bot(object):
             for word in self.blacklist:
                 print(" " + word)
 
+        self.logger.info("sys args: {}".format(self.arguments))
+        self.logger.info("chromedriver args: {}".format(self.chrome_options.arguments))
 
     def run(self):
 
@@ -51,9 +61,11 @@ class influence_farm_bot(object):
         # Checks if user has setup the cookies; load them, eles; create cookie file
         if(os.path.exists('cookies.pkl')):
             print("cookies.pkl found!")
+            self.logger.info("cookies.pkl found!")
             self.load_cookies()
         else:
             print("cookies.pkl not found! Please follow instructions in the readme!")
+            self.logger.critical("cookies.pkl not found! Please follow instructions in the readme!")
             self.init_setup()
 
         self.get_fh4_stream()          # Sets current_channel values
@@ -87,6 +99,7 @@ class influence_farm_bot(object):
         login_prompt = input()                          # Block until user finishes login
 
         pickle.dump( self.browser.get_cookies() , open("cookies.pkl","wb"))
+        self.logger.info("dumped cookies.pkl")
 
         return
 
@@ -101,6 +114,7 @@ class influence_farm_bot(object):
         channel_url  = 'https://mixer.com/' + self.current_channel['token']
         self.browser.get(channel_url)
         print("{} | Now watching: {}".format(time.strftime('%H:%M:%S'), self.current_channel['token']))
+        self.logger.info("watching: {}  {}".format(self.current_channel['token'], channel_url))
         return
 
     def get_fh4_stream(self):
@@ -122,9 +136,11 @@ class influence_farm_bot(object):
                     pass
             except UnicodeEncodeError as e:
                 print(e)
+                self.logger.warning(e)
 
         ## TODO: If the script reaches this point, it has not found any channels, need a solution to mitgate this
         print("No online or valid channels!")
+        self.logger.critical("no online or valid channels found!")
         return
 
     def check_stream_status(self, token):
@@ -140,6 +156,13 @@ class influence_farm_bot(object):
                 return False
         except Exception as e:
             print(e)
+            self.logger.warning(e)
             return False 
 
-influence_farm_bot().run()
+try:
+    influence_farm_bot().run()
+except Exception as e:
+    print(e)
+    self.logger.critical(e)
+    self.logger.critical("STOPPING!")
+    exit()
